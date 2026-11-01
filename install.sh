@@ -1,7 +1,8 @@
 #!/bin/sh
 # Install or upgrade Juzi server binaries from a Juzi-Releases GitHub release.
 #
-#   curl -fsSL https://github.com/apple115/Juzi-Releases/releases/latest/download/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/apple115/Juzi-Releases/master/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/apple115/Juzi-Releases/master/install.sh | sh -s -- --remote
 #
 # The script installs juzi-server and juzi-remote for the current OS/arch,
 # verifies SHA-256 and the embedded protocols, replaces the executable
@@ -36,6 +37,12 @@ usage: install.sh [--server] [--remote] [--prefix DIR] [--version TAG]
 
 Environment: JUZI_RELEASE_REPO, JUZI_VERSION, JUZI_PREFIX,
              JUZI_RELEASE_BASE (a local directory or file:// URL for testing)
+EOF
+	cat <<'EOF'
+
+A remote-only upgrade through the bootstrap:
+  curl -fsSL https://raw.githubusercontent.com/apple115/Juzi-Releases/master/install.sh |
+    sh -s -- --remote
 EOF
 }
 
@@ -414,4 +421,10 @@ if [ "$NO_RESTART" = 0 ]; then
 	done < "$DAEMONS"
 fi
 
-echo "Done. juzi-server and juzi-remote are available in $PREFIX."
+if [ "$DO_SERVER" = 1 ] && [ "$DO_REMOTE" = 1 ]; then
+	echo "Done. juzi-server and juzi-remote are available in $PREFIX."
+elif [ "$DO_SERVER" = 1 ]; then
+	echo "Done. juzi-server is available in $PREFIX."
+else
+	echo "Done. juzi-remote is available in $PREFIX."
+fi
